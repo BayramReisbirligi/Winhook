@@ -1,6 +1,6 @@
 ﻿using Windows.ApplicationModel.DataTransfer;
 namespace ReisProduction.Winhook.Models;
-internal static class ClipboardHelper
+public static class ClipboardHelper
 {
     public static bool TryGetClipboardText(bool isWinUI, out string? text)
     {

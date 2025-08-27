@@ -48,7 +48,6 @@ public partial class InputHook
     public int DoubleClickThresholdMs { get; set; } = 250;
     public int DoublePressThresholdMs { get; set; } = 250;
     public int MovementThreshold { get; set; } = 1;
-    public int PressIntervalMs { get; set; } = 50;
     public int HoldIntervalMs { get; set; } = 50;
     public int MoveThresholdMs { get; set; } =
         Math.Clamp(200 / Environment.ProcessorCount, 25, 100);
