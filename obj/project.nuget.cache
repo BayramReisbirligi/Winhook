@@ -1,0 +1,12 @@
+{
+  "version": 2,
+  "dgSpecHash": "Bfk57OA5kMI=",
+  "success": true,
+  "projectFilePath": "C:\\Users\\BayramReis\\Desktop\\Software\\GitHub\\Winhook\\Winhook.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\BayramReis\\.nuget\\packages\\microsoft.win32.systemevents\\9.0.8\\microsoft.win32.systemevents.9.0.8.nupkg.sha512",
+    "C:\\Users\\BayramReis\\.nuget\\packages\\system.drawing.common\\9.0.8\\system.drawing.common.9.0.8.nupkg.sha512",
+    "C:\\Users\\BayramReis\\.nuget\\packages\\microsoft.windows.sdk.net.ref\\10.0.26100.57\\microsoft.windows.sdk.net.ref.10.0.26100.57.nupkg.sha512"
+  ],
+  "logs": []
+}

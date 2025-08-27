@@ -1,0 +1,12 @@
+C:\Users\BayramReis\Desktop\Software\GitHub\Winhook\obj\x64\Debug\net9.0-windows10.0.26100.0\Winhook.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\BayramReis\Desktop\Software\GitHub\Winhook\obj\x64\Debug\net9.0-windows10.0.26100.0\Winhook.AssemblyInfoInputs.cache
+C:\Users\BayramReis\Desktop\Software\GitHub\Winhook\obj\x64\Debug\net9.0-windows10.0.26100.0\Winhook.AssemblyInfo.cs
+C:\Users\BayramReis\Desktop\Software\GitHub\Winhook\obj\x64\Debug\net9.0-windows10.0.26100.0\Winhook.csproj.CoreCompileInputs.cache
+C:\Users\BayramReis\Desktop\Software\GitHub\Winhook\obj\x64\Debug\net9.0-windows10.0.26100.0\Winhook.sourcelink.json
+C:\Users\BayramReis\Desktop\Software\GitHub\Winhook\bin\x64\Debug\net9.0-windows10.0.26100.0\Winhook.deps.json
+C:\Users\BayramReis\Desktop\Software\GitHub\Winhook\bin\x64\Debug\net9.0-windows10.0.26100.0\Winhook.dll
+C:\Users\BayramReis\Desktop\Software\GitHub\Winhook\bin\x64\Debug\net9.0-windows10.0.26100.0\Winhook.pdb
+C:\Users\BayramReis\Desktop\Software\GitHub\Winhook\obj\x64\Debug\net9.0-windows10.0.26100.0\Winhook.dll
+C:\Users\BayramReis\Desktop\Software\GitHub\Winhook\obj\x64\Debug\net9.0-windows10.0.26100.0\refint\Winhook.dll
+C:\Users\BayramReis\Desktop\Software\GitHub\Winhook\obj\x64\Debug\net9.0-windows10.0.26100.0\Winhook.pdb
+C:\Users\BayramReis\Desktop\Software\GitHub\Winhook\obj\x64\Debug\net9.0-windows10.0.26100.0\ref\Winhook.dll
