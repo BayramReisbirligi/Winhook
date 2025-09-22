@@ -24,6 +24,24 @@ public static class ClipboardHelper
         }
         catch { return false; }
     }
+    public static bool TrySetClipboardText(bool isWinUI, string text)
+    {
+        try
+        {
+            if (string.IsNullOrWhiteSpace(text))
+                throw new ArgumentNullException("Text is null");
+            if (isWinUI)
+            {
+                DataPackage pkg = new();
+                pkg.SetText(text);
+                Clipboard.SetContent(pkg);
+            }
+            else
+                System.Windows.Forms.Clipboard.SetText(text);
+            return true;
+        }
+        catch { return false; }
+    }
     public static bool TryGetClipboardBitmap(bool isWinUI, out object? bitmap)
     {
         bitmap = null;
@@ -43,6 +61,35 @@ public static class ClipboardHelper
                     return false;
                 bitmap = System.Windows.Forms.Clipboard.GetImage();
                 return bitmap is not null;
+            }
+        }
+        catch { return false; }
+    }
+    public static bool TrySetClipboardBitmap(bool isWinUI, object bitmap)
+    {
+        try
+        {
+            if (bitmap is null)
+                return false;
+            if (isWinUI)
+            {
+                if (bitmap is Windows.Storage.Streams.RandomAccessStreamReference rasr)
+                {
+                    DataPackage pkg = new();
+                    pkg.SetBitmap(rasr);
+                    Clipboard.SetContent(pkg);
+                    return true;
+                }
+                return false;
+            }
+            else
+            {
+                if (bitmap is System.Drawing.Image img)
+                {
+                    System.Windows.Forms.Clipboard.SetImage(img);
+                    return true;
+                }
+                return false;
             }
         }
         catch { return false; }
@@ -67,5 +114,32 @@ public static class ClipboardHelper
             content = null;
             return false;
         }
+    }
+    public static bool TrySetClipboardContent(bool isWinUI, object content)
+    {
+        try
+        {
+            if (content is null)
+                return false;
+            if (isWinUI)
+            {
+                if (content is DataPackage pkg)
+                {
+                    Clipboard.SetContent(pkg);
+                    return true;
+                }
+                return false;
+            }
+            else
+            {
+                if (content is System.Windows.Forms.IDataObject dataObj)
+                {
+                    System.Windows.Forms.Clipboard.SetDataObject(dataObj, true);
+                    return true;
+                }
+                return false;
+            }
+        }
+        catch { return false; }
     }
 }

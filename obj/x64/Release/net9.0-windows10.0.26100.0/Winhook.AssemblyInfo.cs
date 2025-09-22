@@ -16,7 +16,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCopyrightAttribute("Copyrights Reis Production 2025")]
 [assembly: System.Reflection.AssemblyDescriptionAttribute("Winhook")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("25.5.1.4")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("25.5.1+6d9e77eb9c64f58200fe4858b3f198351b7ae56e")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("25.5.1+584af22d8669b7c575b407c0796696475c6bfc06")]
 [assembly: System.Reflection.AssemblyProductAttribute("Reis Production")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Winhook")]
 [assembly: System.Reflection.AssemblyVersionAttribute("25.5.1.4")]
