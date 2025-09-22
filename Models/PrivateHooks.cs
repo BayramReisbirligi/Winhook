@@ -20,12 +20,10 @@ public partial class Winhook
     private readonly ConcurrentDictionary<ButtonType, CancellationTokenSource> _holdTokens = [];
     private readonly ConcurrentDictionary<ButtonType, DateTime> _lastClickTimes = [];
     private readonly ConcurrentDictionary<VirtualKey, DateTime> _lastKeyTimes = [];
+    private readonly Dictionary<Type, ManagementEventWatcher?> _watchers = [];
     private readonly HashSet<VirtualKey> _filteredKeys = [];
     private readonly HashSet<MouseType> _filteredMice = [];
-    private readonly HashSet<string>
-        _start = [], _stop = [], _devices = [], _volumes = [], _files = [];
-    private ManagementEventWatcher? _procStarted, _procStopped,
-        _sessionChanged, _deviceChanged, _volumeChanged;
+    private readonly HashSet<string>  _files = [];
     private FileSystemWatcher? _fileWatcher;
     private static DateTime _lastMoveTime;
     private static int _lastX, _lastY;
@@ -49,31 +47,154 @@ public partial class Winhook
     public int HoldIntervalMs { get; set; } = 50;
     public int MoveThresholdMs { get; set; } =
         Math.Clamp(200 / Environment.ProcessorCount, 25, 100);
-    private void HookSessionEvents(bool shouldRun)
+    private void StartOrStopHook(HookBase hook)
     {
-        if (shouldRun)
+        var type = hook.GetType();
+        switch (hook)
         {
-            if (_sessionChanged is null)
-            {
-                _sessionChanged = new(new WqlEventQuery("SELECT * FROM Win32_SessionChangeEvent"));
-                _sessionChanged.EventArrived += OnSessionChanged;
-                _sessionChanged.Start();
-            }
+            case KeyboardHook:
+                if (hook.ShouldStart) StartKeyboardHook();
+                else StopKeyboardHook();
+                break;
+            case MouseHook:
+                if (hook.ShouldStart) StartMouseHook();
+                else StopMouseHook();
+                break;
+            default:
+                if (_hookRanges.ContainsKey(type))
+                {
+                    if (hook.ShouldStart)
+                    {
+                        if (_hookIds[type] == nint.Zero)
+                            _hookIds[type] = SetEventHook(_hookRanges[type].min, _hookRanges[type].max);
+                    }
+                    else if (_hookIds[type] != nint.Zero)
+                    {
+                        UnhookWinEvent(_hookIds[type]);
+                        _hookIds[type] = nint.Zero;
+                    }
+                    return;
+                }
+                break;
         }
-        else
-            _sessionChanged?.Dispose();
-    }
-    private void RecreateProcessWatcher(bool shouldRun)
-    {
-        ref ManagementEventWatcher? watcher = ref (shouldRun ? ref _procStarted : ref _procStopped);
-        var names = shouldRun ? _start : _stop;
-        watcher?.Dispose();
-        watcher = null;
-        string query = $"SELECT * FROM Win32_Process{(shouldRun ? "Start" : "Stop")}Trace";
-        if (names.Count > 0)
-            query += " WHERE " + string.Join(" OR ", names.Select(n => $"ProcessName='{n}'"));
-        watcher = new(new WqlEventQuery(query));
-        watcher.EventArrived += shouldRun ? OnProcessStarted : OnProcessStopped;
+        if (!hook.ShouldStart)
+        {
+            if (_watchers.TryGetValue(type, out var w) && w is not null)
+            {
+                w.Dispose();
+                _watchers.Remove(type);
+            }
+            return;
+        }
+        EventArrivedEventHandler handler;
+        string query = "SELECT * FROM ";
+        switch (hook)
+        {
+            case ProcessStartHook p:
+                query += BuildQuery("Win32_ProcessStartTrace", "ProcessName", p.ProcessNames);
+                handler = OnProcessStarted;
+                break;
+            case ProcessStopHook p:
+                query += BuildQuery("Win32_ProcessStopTrace", "ProcessName", p.ProcessNames);
+                handler = OnProcessStopped;
+                break;
+            case ServiceStartHook s:
+                query = BuildQuery("Win32_ServiceStartTrace", "ServiceName", s.ServiceNames);
+                handler = OnServiceStarted;
+                break;
+            case ServiceStopHook s:
+                query = BuildQuery("Win32_ServiceStopTrace", "ServiceName", s.ServiceNames);
+                handler = OnServiceStopped;
+                break;
+            case ThreadStartHook t:
+                query += BuildQuery("Win32_ThreadStartTrace", "ThreadID", t.ThreadIds.Select(x => x.ToString()));
+                handler = OnThreadStarted;
+                break;
+            case ThreadStopHook t:
+                query += BuildQuery("Win32_ThreadStopTrace", "ThreadID", t.ThreadIds.Select(x => x.ToString()));
+                handler = OnThreadStopped;
+                break;
+            case ModuleLoadHook m:
+                query += BuildQuery("Win32_ModuleLoadTrace", "ModuleName", m.ModuleNames);
+                handler = OnModuleLoaded;
+                break;
+            case ModuleUnloadHook m:
+                query += BuildQuery("Win32_ModuleUnloadTrace", "ModuleName", m.ModuleNames);
+                handler = OnModuleUnloaded;
+                break;
+            case SessionChangeHook:
+                query = "Win32_SessionChangeEvent";
+                handler = OnSessionChanged;
+                break;
+            case DeviceChangeHook d:
+                query += BuildQuery("Win32_DeviceChangeEvent", "DeviceID", d.DeviceIds);
+                handler = OnDeviceChanged;
+                break;
+            case VolumeChangeHook v:
+                query += BuildQuery("Win32_VolumeChangeEvent", "DriveName", v.DriveNames);
+                handler = OnVolumeChanged;
+                break;
+            case PowerManagementHook:
+                query = "Win32_PowerManagementEvent";
+                handler = OnPowerChanged;
+                break;
+            case SystemConfigChangeHook:
+                query = "Win32_SystemConfigurationChangeEvent";
+                handler = OnSystemConfigChanged;
+                break;
+            case TimeChangeHook:
+                query = "Win32_TimeChangeEvent";
+                handler = OnTimeChanged;
+                break;
+            case SystemTraceHook:
+                query = "Win32_SystemTrace";
+                handler = OnSystemTrace;
+                break;
+            case IP4RouteTableHook:
+                query = "Win32_IP4RouteTableEvent";
+                handler = OnIP4RouteChanged;
+                break;
+            case IP6RouteTableHook:
+                query = "Win32_IP6RouteTableEvent";
+                handler = OnIP6RouteChanged;
+                break;
+            case NetworkAdapterConfigChangeHook:
+                query = "Win32_NetworkAdapterConfigurationChangeEvent";
+                handler = OnNetworkAdapterConfigChanged;
+                break;
+            case ProcessTraceHook:
+                query = "Win32_ProcessTrace";
+                handler = OnProcessTrace;
+                break;
+            case ProcessStartTraceHook p:
+                query += BuildQuery("Win32_ProcessStartTrace", "ProcessName", p.ProcessNames);
+                handler = OnProcessTraceStarted;
+                break;
+            case ProcessStopTraceHook p:
+                query += BuildQuery("Win32_ProcessStopTrace", "ProcessName", p.ProcessNames);
+                handler = OnProcessTraceStopped;
+                break;
+            case ThreadTraceHook:
+                query = "Win32_ThreadTrace";
+                handler = OnThreadTrace;
+                break;
+            case ModuleTraceHook:
+                query = "Win32_ModuleTrace";
+                handler = OnModuleTrace;
+                break;
+            case BatchJobStartHook b:
+                query += BuildQuery("Win32_BatchJobStartTrace", "JobName", b.JobNames);
+                handler = OnBatchJobStarted;
+                break;
+            case BatchJobStopHook b:
+                query += BuildQuery("Win32_BatchJobStopTrace", "JobName", b.JobNames);
+                handler = OnBatchJobStopped;
+                break;
+            default:
+                throw new NotSupportedException($"Hook not supported: {hook.GetType().Name}");
+        }
+        ManagementEventWatcher watcher = _watchers[type] = new(new WqlEventQuery(query));
+        if (handler is not null) watcher.EventArrived += handler;
         watcher.Start();
     }
     private void RecreateFileWatcher(NotifyFilters filters = AllNotifyFilters,
@@ -98,206 +219,12 @@ public partial class Winhook
         if (includeError) _fileWatcher.Error += OnFileWatcherError;
         _fileWatcher.EnableRaisingEvents = true;
     }
-
-
-
-    private readonly Dictionary<Type, ManagementEventWatcher?> _watchers = [];
-
-    public void StartOrStopHook(HookBase hook)
+    private static string BuildQuery(string query, string column, IEnumerable<string> filters)
     {
-        var type = hook.GetType();
-        if (!hook.ShouldStart)
-        {
-            if (_watchers.TryGetValue(type, out var w) && w is not null)
-            {
-                w.Dispose();
-                _watchers.Remove(type);
-            }
-            return;
-        }
-        EventArrivedEventHandler handler;
-        string query = "SELECT * FROM ";
-        switch (hook)
-        {
-            case ProcessStartHook p:
-                query += BuildQuery("Win32_ProcessStartTrace", "ProcessName", p.ProcessNames);
-                handler = OnProcessStarted;
-                break;
-
-            case ProcessStopHook p:
-                query += BuildQuery("Win32_ProcessStopTrace", "ProcessName", p.ProcessNames);
-                handler = OnProcessStopped;
-                break;
-            case ServiceStartHook s:
-                query = BuildQuery("Win32_ServiceStartTrace", "ServiceName", s.ServiceNames);
-                handler = OnServiceStarted;
-                break;
-            case ServiceStopHook s:
-                query = BuildQuery("Win32_ServiceStopTrace", "ServiceName", s.ServiceNames);
-                handler = OnServiceStopped;
-                break;
-            case ThreadStartHook t:
-                query += BuildQuery("Win32_ThreadStartTrace", "ThreadID", t.ThreadIds.Select(x => x.ToString()));
-                handler = OnThreadStarted;
-                break;
-
-            case ThreadStopHook t:
-                query += BuildQuery("Win32_ThreadStopTrace", "ThreadID", t.ThreadIds.Select(x => x.ToString()));
-                handler = OnThreadStopped;
-                break;
-
-            case ModuleLoadHook m:
-                query += BuildQuery("Win32_ModuleLoadTrace", "ModuleName", m.ModuleNames);
-                handler = OnModuleLoaded;
-                break;
-
-            case ModuleUnloadHook m:
-                query += BuildQuery("Win32_ModuleUnloadTrace", "ModuleName", m.ModuleNames);
-                handler = OnModuleUnloaded;
-                break;
-
-            case SessionChangeHook:
-                query = "Win32_SessionChangeEvent";
-                handler = OnSessionChanged;
-                break;
-
-            case DeviceChangeHook d:
-                query += BuildQuery("Win32_DeviceChangeEvent", "DeviceID", d.DeviceIds);
-                handler = OnDeviceChanged;
-                break;
-
-            case VolumeChangeHook v:
-                query += BuildQuery("Win32_VolumeChangeEvent", "DriveName", v.DriveNames);
-                handler = OnVolumeChanged;
-                break;
-
-            case PowerManagementHook:
-                query = "Win32_PowerManagementEvent";
-                handler = OnPowerChanged;
-                break;
-
-            case SystemConfigChangeHook:
-                query = "Win32_SystemConfigurationChangeEvent";
-                handler = OnSystemConfigChanged;
-                break;
-
-            case TimeChangeHook:
-                query = "Win32_TimeChangeEvent";
-                handler = OnTimeChanged;
-                break;
-
-            case SystemTraceHook:
-                query = "Win32_SystemTrace";
-                handler = OnSystemTrace;
-                break;
-
-            case IP4RouteTableHook:
-                query = "Win32_IP4RouteTableEvent";
-                handler = OnIP4RouteChanged;
-                break;
-
-            case IP6RouteTableHook:
-                query = "Win32_IP6RouteTableEvent";
-                handler = OnIP6RouteChanged;
-                break;
-
-            case NetworkAdapterConfigChangeHook:
-                query = "Win32_NetworkAdapterConfigurationChangeEvent";
-                handler = OnNetworkAdapterConfigChanged;
-                break;
-
-            case ProcessTraceHook:
-                query = "Win32_ProcessTrace";
-                handler = OnProcessTrace;
-                break;
-
-            case ProcessStartTraceHook p:
-                query += BuildQuery("Win32_ProcessStartTrace", "ProcessName", p.ProcessNames);
-                handler = OnProcessTraceStarted;
-                break;
-
-            case ProcessStopTraceHook p:
-                query += BuildQuery("Win32_ProcessStopTrace", "ProcessName", p.ProcessNames);
-                handler = OnProcessTraceStopped;
-                break;
-
-            case ThreadTraceHook:
-                query = "Win32_ThreadTrace";
-                handler = OnThreadTrace;
-                break;
-
-            case ModuleTraceHook:
-                query = "Win32_ModuleTrace";
-                handler = OnModuleTrace;
-                break;
-
-            case BatchJobStartHook b:
-                query += BuildQuery("Win32_BatchJobStartTrace", "JobName", b.JobNames);
-                handler = OnBatchJobStarted;
-                break;
-
-            case BatchJobStopHook b:
-                query += BuildQuery("Win32_BatchJobStopTrace", "JobName", b.JobNames);
-                handler = OnBatchJobStopped;
-                break;
-
-            default:
-                throw new NotSupportedException($"Hook not supported: {hook.GetType().Name}");
-        }
-        ManagementEventWatcher watcher = _watchers[type] = new(new WqlEventQuery(query));
-        if (handler is not null) watcher.EventArrived += handler;
-        watcher.Start();
-    }
-    private static string BuildQuery(string query, string column, IEnumerable<string>? filters)
-    {
-        if (filters is not null && filters.Any())
+        if (filters.Any())
             query += " WHERE " + string.Join(" OR ", filters.Select(f => $"{column}='{f}'"));
         return query;
     }
-
-    public void Disposes2()
-    {
-        foreach (var w in _watchers.Values)
-            w?.Dispose();
-        _watchers.Clear();
-    }
-
-
-
-
-
-
-
-
-
-
-    public enum WmiEventType
-    {
-        ProcessStart,
-        ProcessStop,
-        ThreadStart,
-        ThreadStop,
-        ModuleLoad,
-        ModuleUnload,
-        SessionChange,
-        DeviceChange,
-        VolumeChange,
-        Logon,
-        Logoff,
-        PowerManagement,
-        RegistryChange,
-        ServiceStart,
-        ServiceStop,
-        ServicePause,
-        ServiceResume,
-        JobStart,
-        JobStop,
-        HandleCreated,
-        HandleDeleted,
-        ObjectOperation,
-        ObjectDelete
-    }
-
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private void WinEventCallback(nint __, uint eventType, nint hWnd, int ___, int ____, uint _____, uint ______)
     {

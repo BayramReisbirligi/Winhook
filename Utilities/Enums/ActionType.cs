@@ -17,5 +17,7 @@ public enum EventType : ushort
     Console = 0x0D,
     Uia = 0x0E,
     Object = 0x0F,
-    Session = 0x10
+    Session = 0x10,
+    Keyboard = 0x11,
+    Mouse = 0x12
 }

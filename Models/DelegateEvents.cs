@@ -4,19 +4,32 @@ using Windows.System;
 namespace ReisProduction.Winhook.Models;
 public partial class Winhook
 {
-    public event Action<string, uint, EventArrivedEventArgs>
+    public event Action<EventArrivedEventArgs>
         ProcessStarted = delegate { },
         ProcessStopped = delegate { },
-        ProcessesStarted = delegate { },
-        ProcessesStopped = delegate { },
         ServiceStarted = delegate { },
         ServiceStopped = delegate { },
-        ServicesStarted = delegate { },
-        ServicesStopped = delegate { };
-    public event Action<string, EventArrivedEventArgs>
+        ThreadStarted = delegate { },
+        ThreadStopped = delegate { },
+        ModuleLoaded = delegate { },
+        ModuleUnloaded = delegate { },
         SessionChanged = delegate { },
         DeviceChanged = delegate { },
-        VolumeChanged = delegate { };
+        VolumeChanged = delegate { },
+        PowerChanged = delegate { },
+        SystemConfigChanged = delegate { },
+        TimeChanged = delegate { },
+        SystemTrace = delegate { },
+        IP4RouteChanged = delegate { },
+        IP6RouteChanged = delegate { },
+        NetworkAdapterConfigChanged = delegate { },
+        ProcessTrace = delegate { },
+        ProcessTraceStarted = delegate { },
+        ProcessTraceStopped = delegate { },
+        ThreadTrace = delegate { },
+        ModuleTrace = delegate { },
+        BatchJobStarted = delegate { },
+        BatchJobStopped = delegate { };
     public event Action<nint>
         WindowSound = delegate { },
         WindowAlert = delegate { } ,

@@ -6,19 +6,54 @@ namespace ReisProduction.Winhook.Models;
 public partial class Winhook
 {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private void OnProcessStarted(object __, EventArrivedEventArgs e) => ProcessesStarted.Invoke((string)e.NewEvent.Properties["ProcessName"].Value, (uint)e.NewEvent.Properties["ProcessID"].Value, e);
+    private void OnProcessStarted(object __, EventArrivedEventArgs e) => ProcessStarted.Invoke(e);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private void OnProcessStopped(object __, EventArrivedEventArgs e) => ProcessesStopped.Invoke((string)e.NewEvent.Properties["ProcessName"].Value, (uint)e.NewEvent.Properties["ProcessID"].Value, e);
+    private void OnProcessStopped(object __, EventArrivedEventArgs e) => ProcessStopped.Invoke(e);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private void OnServiceStarted(object __, EventArrivedEventArgs e) => ProcessesStarted.Invoke((string)e.NewEvent.Properties["ServiceName"].Value, (uint)e.NewEvent.Properties["ProcessID"].Value, e);
+    private void OnServiceStarted(object __, EventArrivedEventArgs e) => ServiceStarted.Invoke(e);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private void OnServiceStopped(object __, EventArrivedEventArgs e) => ProcessesStopped.Invoke((string)e.NewEvent.Properties["ServiceName"].Value, (uint)e.NewEvent.Properties["ProcessID"].Value, e);
+    private void OnServiceStopped(object __, EventArrivedEventArgs e) => ServiceStopped.Invoke(e);
+    private void OnThreadStarted(object __, EventArrivedEventArgs e) => ThreadStarted.Invoke(e);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private void OnSessionChanged(object __, EventArrivedEventArgs e) => SessionChanged.Invoke((string)e.NewEvent["Reason"], e);
+    private void OnThreadStopped(object __, EventArrivedEventArgs e) => ThreadStopped.Invoke(e);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private void OnDeviceChanged(object __, EventArrivedEventArgs e) => DeviceChanged.Invoke(e.NewEvent.ClassPath.ClassName, e);
+    private void OnModuleLoaded(object __, EventArrivedEventArgs e) => ModuleLoaded.Invoke(e);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private void OnVolumeChanged(object __, EventArrivedEventArgs e) => VolumeChanged.Invoke($"Volume Event: {e.NewEvent["DriveName"]} - EventType {e.NewEvent["EventType"]}", e);
+    private void OnModuleUnloaded(object __, EventArrivedEventArgs e) => ModuleUnloaded.Invoke(e);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private void OnSessionChanged(object __, EventArrivedEventArgs e) => SessionChanged.Invoke(e);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private void OnDeviceChanged(object __, EventArrivedEventArgs e) => DeviceChanged.Invoke(e);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private void OnVolumeChanged(object __, EventArrivedEventArgs e) => VolumeChanged.Invoke(e);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private void OnPowerChanged(object __, EventArrivedEventArgs e) => PowerChanged.Invoke(e);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private void OnSystemConfigChanged(object __, EventArrivedEventArgs e) => SystemConfigChanged.Invoke(e);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private void OnTimeChanged(object __, EventArrivedEventArgs e) => TimeChanged.Invoke(e);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private void OnSystemTrace(object __, EventArrivedEventArgs e) => SystemTrace.Invoke(e);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private void OnIP4RouteChanged(object __, EventArrivedEventArgs e) => IP4RouteChanged.Invoke(e);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private void OnIP6RouteChanged(object __, EventArrivedEventArgs e) => IP6RouteChanged.Invoke(e);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private void OnNetworkAdapterConfigChanged(object __, EventArrivedEventArgs e) => NetworkAdapterConfigChanged.Invoke(e);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private void OnProcessTrace(object __, EventArrivedEventArgs e) => ProcessTrace.Invoke(e);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private void OnProcessTraceStarted(object __, EventArrivedEventArgs e) => ProcessTraceStarted.Invoke(e);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private void OnProcessTraceStopped(object __, EventArrivedEventArgs e) => ProcessTraceStopped.Invoke(e);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private void OnThreadTrace(object __, EventArrivedEventArgs e) => ThreadTrace.Invoke(e);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private void OnModuleTrace(object __, EventArrivedEventArgs e) => VolumeChanged.Invoke(e);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private void OnBatchJobStarted(object __, EventArrivedEventArgs e) => BatchJobStarted.Invoke(e);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private void OnBatchJobStopped(object __, EventArrivedEventArgs e) => BatchJobStopped.Invoke(e);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private void OnWindowSound(nint hWnd) => WindowSound(hWnd);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
