@@ -29,7 +29,7 @@ public static class ClipboardHelper
         try
         {
             if (string.IsNullOrWhiteSpace(text))
-                throw new ArgumentNullException("Text is null");
+                throw new ArgumentNullException(nameof(text));
             if (isWinUI)
             {
                 DataPackage pkg = new();
