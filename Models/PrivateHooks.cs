@@ -9,7 +9,6 @@ using ReisProduction.Winhook.Utilities;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Collections.Concurrent;
-using Microsoft.Win32.SafeHandles;
 using System.ComponentModel;
 using System.Management;
 using Windows.System;
@@ -48,77 +47,6 @@ public partial class Winhook
     public int HoldIntervalMs { get; set; } = 50;
     public int MoveThresholdMs { get; set; } =
         Math.Clamp(200 / Environment.ProcessorCount, 25, 100);
-    private RegisteredWaitHandle? _registeredWait;
-    private SafeRegistryHandle? _registryHandle;
-    public event Action? RegistryChanged;
-    private AutoResetEvent? _event;
-    private readonly string _keyPath;
-    private readonly nuint _hive;
-    public int RegPollTimeOut { get; set; } = -1;
-    public void Start(bool WatchSubTree)
-    {
-        if (RegOpenKeyEx(_hive, _keyPath, 0, KEY_READ, out var handle) is not 0)
-            throw new InvalidOperationException("Registry key açılamadı!");
-        _registryHandle = new(handle, true);
-        _event = new(false);
-        _registeredWait = ThreadPool.RegisterWaitForSingleObject(
-            _event,
-            (_, __) => OnRegistryChanged(),
-            null,
-            RegPollTimeOut,
-            true
-        );
-        Watch(WatchSubTree);
-    }
-
-    private void Watch(RegChangeNotifyFilter reg)
-    {
-        RegNotifyChangeKeyValue(
-            _registryHandle!.DangerousGetHandle(),
-            true, reg,
-            _event!.SafeWaitHandle.DangerousGetHandle(),
-            true
-        );
-    }
-
-    private void OnRegistryChanged()
-    {
-        RegistryChanged?.Invoke();
-        Watch();
-    }
-
-    public void Stop()
-    {
-        _registeredWait?.Unregister(null);
-        _event?.Dispose();
-        _registryHandle?.Dispose();
-    }
-
-    public void Dispsose() => Stop();
-
-    #region WinAPI
-
-    private const int KEY_READ = 0x20019;
-
-    [Flags]
-    private enum RegChangeNotifyFilter : uint
-    {
-        REG_NOTIFY_CHANGE_NAME = 1,
-        REG_NOTIFY_CHANGE_ATTRIBUTES = 2,
-        REG_NOTIFY_CHANGE_LAST_SET = 4,
-        REG_NOTIFY_CHANGE_SECURITY = 8,
-    }
-
-    [DllImport("advapi32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
-    private static extern int RegOpenKeyEx(
-        UIntPtr hKey, string lpSubKey, int ulOptions, int samDesired, out IntPtr phkResult);
-
-    [DllImport("advapi32.dll", SetLastError = true)]
-    private static extern int RegNotifyChangeKeyValue(
-        IntPtr hKey, bool bWatchSubtree, RegChangeNotifyFilter dwNotifyFilter,
-        IntPtr hEvent, bool fAsynchronous);
-
-    #endregion
     private void StartOrStopHook(HookBase hook)
     {
         var type = hook.GetType();

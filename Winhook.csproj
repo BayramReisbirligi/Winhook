@@ -37,7 +37,7 @@
       <HintPath>..\..\..\..\..\..\Windows\Microsoft.NET\Framework\v4.0.30319\System.Windows.Forms.dll</HintPath>
     </Reference>
     <Reference Include="Windelay">
-      <HintPath>..\Windelay\bin\Release\net9.0-windows10.0.26100.0\Windelay.dll</HintPath>
+      <HintPath>..\Windelay\bin\x64\Release\net9.0-windows10.0.26100.0\Windelay.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
