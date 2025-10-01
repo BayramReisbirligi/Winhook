@@ -32,6 +32,8 @@ public partial class Winhook
     public bool AllowClickOnDoubleClick { get; set; } = true;
     public bool AllowPressOnDoublePress { get; set; } = true;
     public bool AcceptInjectedKeyboard { get; set; } = true;
+    public bool IncloudeSubdirectories { get; set; } = false;
+    public bool EnableRaisingEvents { get; set; } = true;
     public bool AcceptInjectedMouse { get; set; } = true;
     public bool AcceptNoneInput { get; set; } = false;
     public bool AcceptSYSDown { get; set; } = true;
@@ -55,15 +57,15 @@ public partial class Winhook
             case KeyboardHook:
                 if (hook.ShouldStart) StartKeyboardHook();
                 else StopKeyboardHook();
-                break;
+                return;
             case MouseHook:
                 if (hook.ShouldStart) StartMouseHook();
                 else StopMouseHook();
-                break;
+                return;
             case FileHook f:
                 if (hook.ShouldStart) HookFiles(f);
                 else UnhookFiles(f.Paths);
-                break;
+                return;
             default:
                 if (_hookRanges.ContainsKey(type))
                 {
@@ -201,10 +203,11 @@ public partial class Winhook
         if (handler is not null) watcher.EventArrived += handler;
         watcher.Start();
     }
-    private void RecreateFileWatcher(NotifyFilters filters = AllNotifyFilters,
+    private void RecreateFileWatcher(string filter = "*.*",
+        NotifyFilters filters = AllNotifyFilters,
         bool includeCreated = true, bool includeChanged = true,
         bool includeDeleted = true, bool includeRenamed = true,
-        bool includeError = true)
+        bool includeError = true, bool includeSubdirectories = true)
     {
         _fileWatcher?.Dispose();
         _fileWatcher = null;
@@ -212,9 +215,10 @@ public partial class Winhook
         string folder = Path.GetDirectoryName(_files.First())!;
         _fileWatcher = new(folder)
         {
-            Filter = "*.*",
+            Filter = filter,
             NotifyFilter = filters,
-            IncludeSubdirectories = false
+            EnableRaisingEvents = EnableRaisingEvents,
+            IncludeSubdirectories = includeSubdirectories
         };
         if (includeCreated) _fileWatcher.Created += OnFileCreated;
         if (includeChanged) _fileWatcher.Changed += OnFileChanged;

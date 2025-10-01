@@ -44,6 +44,6 @@ public record UiaHook(bool ShouldStart = true) : HookBase(ShouldStart);
 public record ObjectHook(bool ShouldStart = true) : HookBase(ShouldStart);
 public record KeyboardHook(bool ShouldStart = true) : HookBase(ShouldStart);
 public record MouseHook(bool ShouldStart = true) : HookBase(ShouldStart);
-public record FileHook (bool ShouldStart = true, NotifyFilters Filters = AllNotifyFilters,
-    bool IncludeCreated = true, bool IncludeChanged = true, bool IncludeDeleted = true,
-    bool IncludeRenamed = true, bool IncludeError = true, params string[] Paths) : HookBase(ShouldStart);
+public record FileHook (bool ShouldStart = true, string Filter = "*.*",
+    NotifyFilters Filters = AllNotifyFilters, bool IncludeCreated = true, bool IncludeChanged = true, bool IncludeDeleted = true,
+    bool IncludeRenamed = true, bool IncludeError = true, bool IncludeSubdirectories = true, params string[] Paths) : HookBase(ShouldStart);

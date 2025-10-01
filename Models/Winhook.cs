@@ -62,10 +62,10 @@ public partial class Winhook : IDisposable
     }
     public void HookFiles(FileHook hook)
     {
-        foreach (var p in hook.Paths.Where(File.Exists))
+        foreach (var p in hook.Paths.Where(p => Directory.Exists(p) || File.Exists(p)))
             _files.Add(Path.GetFullPath(p));
-        RecreateFileWatcher(hook.Filters, hook.IncludeCreated, hook.IncludeChanged,
-            hook.IncludeDeleted, hook.IncludeRenamed, hook.IncludeError);
+        RecreateFileWatcher(hook.Filter, hook.Filters, hook.IncludeCreated, hook.IncludeChanged,
+            hook.IncludeDeleted, hook.IncludeRenamed, hook.IncludeError, hook.IncludeSubdirectories);
     }
     public void UnhookFiles(params string[] paths)
     {
