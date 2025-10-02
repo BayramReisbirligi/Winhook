@@ -48,6 +48,11 @@ public partial class Winhook : IDisposable
     private static nint
         _keyboardHookID = nint.Zero,
         _mouseHookID = nint.Zero;
+    /// <summary>
+    /// Raised for low-level Windows events captured via WinEventHook or other system hooks.
+    /// Includes window changes, UI Automation notifications, and accessibility events.
+    /// </summary>
+    /// <param name="name">Windows hook</param>
     public Winhook()
     {
         _keyboardProc = KeyboardHookCallback;
@@ -55,11 +60,17 @@ public partial class Winhook : IDisposable
         _winEvents = WinEventCallback;
         GC.KeepAlive(this);
     }
+    /// <summary>
+    /// Start or stop the specified hooks in Hookbase.
+    /// </summary>
     public void StartOrStopHooks(params HookBase[] hooks)
     {
         foreach (var hook in hooks)
             StartOrStopHook(hook);
     }
+    /// <summary>
+    /// Hook files and recreate file watcher with specified parameters.
+    /// </summary>
     public void HookFiles(FileHook hook)
     {
         foreach (var p in hook.Paths.Where(p => Directory.Exists(p) || File.Exists(p)))
@@ -67,37 +78,58 @@ public partial class Winhook : IDisposable
         RecreateFileWatcher(hook.Filter, hook.Filters, hook.IncludeCreated, hook.IncludeChanged,
             hook.IncludeDeleted, hook.IncludeRenamed, hook.IncludeError, hook.IncludeSubdirectories);
     }
+    /// <summary>
+    /// Unhook files and recreate file watcher.
+    /// </summary>
     public void UnhookFiles(params string[] paths)
     {
         foreach (var p in paths)
             _files.Remove(Path.GetFullPath(p));
         RecreateFileWatcher();
     }
+    /// <summary>
+    /// Clear all hooked files and recreate file watcher.
+    /// </summary>
     public void ClearHookedFiles()
     {
         _files.Clear();
         RecreateFileWatcher();
     }
+    /// <summary>
+    /// Filter specified virtual keys.
+    /// </summary>
     public void FilterKeys(params VirtualKey[] keys)
     {
         foreach (var key in keys)
             _filteredKeys.Add(key);
     }
+    /// <summary>
+    /// Unfilter specified virtual keys.
+    /// </summary>
     public void UnfilterKeys(params VirtualKey[] keys)
     {
         foreach (var key in keys)
             _filteredKeys.Remove(key);
     }
+    /// <summary>
+    /// Filter specified mouse types.
+    /// </summary>
     public void FilterMice(params MouseType[] mice)
     {
         foreach (var mouse in mice)
             _filteredMice.Add(mouse);
     }
+    /// <summary>
+    /// Unfilter specified mouse types.
+    /// </summary>
     public void UnfilterMice(params MouseType[] mice)
     {
         foreach (var mouse in mice)
             _filteredMice.Remove(mouse);
     }
+    /// <summary>
+    /// Filter or unfilter all valid keys or all mouse types.
+    /// </summary>
     public void FilterAllType(bool isKey, bool filter)
     {
         if (isKey)

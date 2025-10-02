@@ -2,7 +2,6 @@
 using static ReisProduction.Winhook.Utilities.Constants;
 using static ReisProduction.Winhook.Services.Interop;
 using ReisProduction.Winhook.Utilities.Structs;
-using ReisProduction.Windelay.Utilities.Enums;
 using ReisProduction.Winhook.Utilities.Enums;
 using ReisProduction.Windelay.Utilities;
 using ReisProduction.Winhook.Utilities;
@@ -27,28 +26,6 @@ public partial class Winhook
     private FileSystemWatcher? _fileWatcher;
     private static DateTime _lastMoveTime;
     private static int _lastX, _lastY;
-    public DelayType MouseHoldDelayType { get; set; } = DelayType.TaskDelay;
-    public DelayType KeyHoldDelayType { get; set; } = DelayType.TaskDelay;
-    public bool AllowClickOnDoubleClick { get; set; } = true;
-    public bool AllowPressOnDoublePress { get; set; } = true;
-    public bool AcceptInjectedKeyboard { get; set; } = true;
-    public bool IncloudeSubdirectories { get; set; } = false;
-    public bool EnableRaisingEvents { get; set; } = true;
-    public bool AcceptInjectedMouse { get; set; } = true;
-    public bool AcceptNoneInput { get; set; } = false;
-    public bool AcceptSYSDown { get; set; } = true;
-    public bool AcceptSYSUp { get; set; } = true;
-    public bool AllowKeyPress { get; set; } = false;
-    public bool AllowKeyHold { get; set; } = false;
-    public bool AllowClick { get; set; } = false;
-    public bool AllowHold { get; set; } = false;
-    public int DoubleClickThresholdMs { get; set; } = 250;
-    public int DoublePressThresholdMs { get; set; } = 250;
-    public int MovementThreshold { get; set; } = 1;
-    public int KeyHoldIntervalMs { get; set; } = 50;
-    public int HoldIntervalMs { get; set; } = 50;
-    public int MoveThresholdMs { get; set; } =
-        Math.Clamp(200 / Environment.ProcessorCount, 25, 100);
     private void StartOrStopHook(HookBase hook)
     {
         var type = hook.GetType();

@@ -4,6 +4,9 @@ using Windows.System;
 namespace ReisProduction.Winhook.Models;
 public partial class Winhook
 {
+    /// <summary>
+    /// System.Management event watcher events
+    /// </summary>
     public event Action<EventArrivedEventArgs>
         ProcessStarted = delegate { },
         ProcessStopped = delegate { },
@@ -30,6 +33,9 @@ public partial class Winhook
         ModuleTrace = delegate { },
         BatchJobStarted = delegate { },
         BatchJobStopped = delegate { };
+    /// <summary>
+    /// SetWinEventHook event callbacks
+    /// </summary>
     public event Action<nint>
         WindowSound = delegate { },
         WindowAlert = delegate { } ,
@@ -104,37 +110,58 @@ public partial class Winhook
         ObjectImeHide = delegate { },
         ObjectImeChange = delegate { },
         ObjectTextEditConversionTargetChanged = delegate { };
+    /// <summary>
+    /// System.IO.FileSystemWatcher events
+    /// </summary>
     public event Action<FileSystemEventArgs>
         FileCreated = delegate { },
         FileChanged = delegate { },
         FileDeleted = delegate { },
         FileRenamed = delegate { };
+    /// <summary>
+    /// System.IO.FileSystemWatcher error event
+    /// </summary>
     public event Action<ErrorEventArgs>
         FileWatcherError = delegate { };
+    /// <summary>
+    /// LowLevel hook events
+    /// </summary>
     public event Action<InputType>
         InputDown = delegate { },
         InputHold = delegate { },
         InputPress = delegate { },
         InputDoublePress = delegate { },
         InputUp = delegate { };
+    /// <summary>
+    /// LowLevel keyboard hook events
+    /// </summary>
     public event Action<VirtualKey>
         KeyDown = delegate { },
         KeyHold = delegate { },
         KeyPress = delegate { },
         KeyDoublePress = delegate { },
         KeyUp = delegate { };
+    /// <summary>
+    /// LowLevel mouse hook events
+    /// </summary>
     public event Action<ButtonType>
         MouseDown = delegate { },
         MouseClick = delegate { },
         MouseHold = delegate { },
         MouseDoubleClick = delegate { },
         MouseUp = delegate { };
+    /// <summary>
+    /// LowLevel mouse scroll event
+    /// </summary>
     public event Action<ScrollType>
         MouseScroll = delegate { },
         MouseScrollLeft = delegate { },
         MouseScrollRight = delegate { },
         MouseScrollUp = delegate { },
         MouseScrollDown = delegate { };
+    /// <summary>
+    /// LowLevel mouse move events
+    /// </summary>
     public event Action<int, int>
         MouseMove = delegate { },
         MouseMoveLeft = delegate { },

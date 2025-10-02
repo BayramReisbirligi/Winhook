@@ -2,6 +2,10 @@
 namespace ReisProduction.Winhook.Models;
 public static class ClipboardHelper
 {
+    /// <summary>
+    /// Attempts to read text from the clipboard. 
+    /// Returns true if non-empty text is available, otherwise false.
+    /// </summary>
     public static bool TryGetClipboardText(bool isWinUI, out string? text)
     {
         text = null;
@@ -24,6 +28,11 @@ public static class ClipboardHelper
         }
         catch { return false; }
     }
+    /// <summary>
+    /// Returns true on success, otherwise false.
+    /// </summary>
+    /// <param name="name">Attempts to set text to the clipboard.</param>
+    /// <exception cref="ArgumentNullException">Thrown if text is null or white space. And return false</exception>
     public static bool TrySetClipboardText(bool isWinUI, string text)
     {
         try
@@ -41,6 +50,10 @@ public static class ClipboardHelper
         }
         catch { return false; }
     }
+    /// <summary>
+    /// Returns true if an image is available, otherwise false.
+    /// </summary>
+    /// <param name="name">Attempts to read a bitmap/image from the clipboard.</param>
     public static bool TryGetClipboardBitmap(bool isWinUI, out object? bitmap)
     {
         bitmap = null;
@@ -64,6 +77,10 @@ public static class ClipboardHelper
         }
         catch { return false; }
     }
+    /// <summary>
+    /// Attempts to set a bitmap/image to the clipboard. 
+    /// Returns true if the provided object is valid and successfully stored.
+    /// </summary>
     public static bool TrySetClipboardBitmap(bool isWinUI, object bitmap)
     {
         try
@@ -93,6 +110,10 @@ public static class ClipboardHelper
         }
         catch { return false; }
     }
+    /// <summary>
+    /// Attempts to read the raw clipboard content object. 
+    /// Returns true if content is available, otherwise false.
+    /// </summary>
     public static bool TryGetClipboardContent(bool isWinUI, out object? content)
     {
         try
@@ -114,6 +135,10 @@ public static class ClipboardHelper
             return false;
         }
     }
+    /// <summary>
+    /// Attempts to set the raw clipboard content object. 
+    /// Returns true if the provided object is valid and successfully stored.
+    /// </summary>
     public static bool TrySetClipboardContent(bool isWinUI, object content)
     {
         try
