@@ -14,15 +14,13 @@ public static class ClipboardHelper
             if (isWinUI)
             {
                 var content = Clipboard.GetContent();
-                if (!content.Contains(StandardDataFormats.Text))
-                    return false;
-                text = content.GetTextAsync().GetAwaiter().GetResult();
+                if (content.Contains(StandardDataFormats.Text))
+                    text = content.GetTextAsync().GetAwaiter().GetResult();
             }
             else
             {
-                if (!System.Windows.Forms.Clipboard.ContainsText())
-                    return false;
-                text = System.Windows.Forms.Clipboard.GetText();
+                if (System.Windows.Forms.Clipboard.ContainsText())
+                    text = System.Windows.Forms.Clipboard.GetText();
             }
             return !string.IsNullOrWhiteSpace(text);
         }
@@ -32,12 +30,12 @@ public static class ClipboardHelper
     /// Returns true on success, otherwise false.
     /// </summary>
     /// <param name="name">Attempts to set text to the clipboard.</param>
-    /// <exception cref="ArgumentNullException">Thrown if text is null or white space. And return false</exception>
+    /// <exception cref="ArgumentNullException">Thrown if text is null or empty. And return false</exception>
     public static bool TrySetClipboardText(bool isWinUI, string text)
     {
         try
         {
-            ArgumentException.ThrowIfNullOrWhiteSpace(text);
+            ArgumentException.ThrowIfNullOrEmpty(text);
             if (isWinUI)
             {
                 DataPackage pkg = new();
@@ -62,18 +60,15 @@ public static class ClipboardHelper
             if (isWinUI)
             {
                 var content = Clipboard.GetContent();
-                if (!content.Contains(StandardDataFormats.Bitmap))
-                    return false;
-                bitmap = content.GetBitmapAsync().GetAwaiter().GetResult();
-                return bitmap is not null;
+                if (content.Contains(StandardDataFormats.Bitmap))
+                    bitmap = content.GetBitmapAsync().GetAwaiter().GetResult();
             }
             else
             {
-                if (!System.Windows.Forms.Clipboard.ContainsImage())
-                    return false;
-                bitmap = System.Windows.Forms.Clipboard.GetImage();
-                return bitmap is not null;
+                if (System.Windows.Forms.Clipboard.ContainsImage())
+                    bitmap = System.Windows.Forms.Clipboard.GetImage();
             }
+            return bitmap is not null;
         }
         catch { return false; }
     }
@@ -85,28 +80,26 @@ public static class ClipboardHelper
     {
         try
         {
-            if (bitmap is null)
-                return false;
-            if (isWinUI)
-            {
-                if (bitmap is Windows.Storage.Streams.RandomAccessStreamReference rasr)
+            if (bitmap is not null)
+                if (isWinUI)
                 {
-                    DataPackage pkg = new();
-                    pkg.SetBitmap(rasr);
-                    Clipboard.SetContent(pkg);
-                    return true;
+                    if (bitmap is Windows.Storage.Streams.RandomAccessStreamReference rasr)
+                    {
+                        DataPackage pkg = new();
+                        pkg.SetBitmap(rasr);
+                        Clipboard.SetContent(pkg);
+                        return true;
+                    }
                 }
-                return false;
-            }
-            else
-            {
-                if (bitmap is System.Drawing.Image img)
+                else
                 {
-                    System.Windows.Forms.Clipboard.SetImage(img);
-                    return true;
+                    if (bitmap is System.Drawing.Image img)
+                    {
+                        System.Windows.Forms.Clipboard.SetImage(img);
+                        return true;
+                    }
                 }
-                return false;
-            }
+            return false;
         }
         catch { return false; }
     }
@@ -119,15 +112,10 @@ public static class ClipboardHelper
         try
         {
             if (isWinUI)
-            {
                 content = Clipboard.GetContent();
-                return content is not null;
-            }
             else
-            {
                 content = System.Windows.Forms.Clipboard.GetDataObject();
-                return content is not null;
-            }
+            return content is not null;
         }
         catch
         {
@@ -143,26 +131,36 @@ public static class ClipboardHelper
     {
         try
         {
-            if (content is null)
-                return false;
+            if (content is not null)
+                if (isWinUI)
+                {
+                    if (content is DataPackage pkg)
+                    {
+                        Clipboard.SetContent(pkg);
+                        return true;
+                    }
+                }
+                else
+                {
+                    if (content is System.Windows.Forms.IDataObject dataObj)
+                    {
+                        System.Windows.Forms.Clipboard.SetDataObject(dataObj, true);
+                        return true;
+                    }
+                }
+            return false;
+        }
+        catch { return false; }
+    }
+    public static bool TryClearClipboardContent(bool isWinUI)
+    {
+        try
+        {
             if (isWinUI)
-            {
-                if (content is DataPackage pkg)
-                {
-                    Clipboard.SetContent(pkg);
-                    return true;
-                }
-                return false;
-            }
+                Clipboard.Clear();
             else
-            {
-                if (content is System.Windows.Forms.IDataObject dataObj)
-                {
-                    System.Windows.Forms.Clipboard.SetDataObject(dataObj, true);
-                    return true;
-                }
-                return false;
-            }
+                System.Windows.Forms.Clipboard.Clear();
+            return true;
         }
         catch { return false; }
     }
