@@ -142,6 +142,9 @@ public partial class Winhook : IDisposable
         else
             _filteredMice.Clear();
     }
+    /// <summary>
+    /// Dispose and unhook all hooks and file watchers.
+    /// </summary>
     public void Dispose()
     {
         foreach (var w in _watchers.Values)
