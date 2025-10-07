@@ -1,7 +1,10 @@
 ﻿using static ReisProduction.Winhook.Utilities.Constants;
 using ReisProduction.Winhook.Utilities.Structs;
-using System.ComponentModel;
 using System.Runtime.InteropServices;
+using System.Security.Principal;
+using System.ComponentModel;
+using System.Diagnostics;
+using System.Security;
 using System.Text;
 namespace ReisProduction.Winhook.Services;
 public static class Interop
@@ -16,6 +19,35 @@ public static class Interop
         StringBuilder sb = new(MAX_TITLE_LENGTH);
         return GetWindowText(hwnd, sb, sb.Capacity) > 0 ? sb.ToString() : string.Empty;
     }
+    public static bool IsProcessRunningAsAdmin(int pid)
+    {
+        try
+        {
+            var process = Process.GetProcessById(pid);
+            nint processHandle = OpenProcess(
+                PROCESS_QUERY_LIMITED_INFORMATION,
+                false,
+                process.Id);
+            try
+            {
+                if (processHandle == nint.Zero || !OpenProcessToken(processHandle,
+                    TOKEN_QUERY, out nint tokenHandle))
+                    return false;
+                using WindowsIdentity identity = new(tokenHandle);
+                WindowsPrincipal principal = new(identity);
+                return principal.IsInRole(WindowsBuiltInRole.Administrator);
+            }
+            finally { CloseHandle(processHandle); }
+        }
+        catch (SecurityException) { return true; }
+        catch { return false; }
+    }
+    [DllImport("kernel32.dll", SetLastError = true)]
+    private static extern nint OpenProcess(uint dwDesiredAccess, bool bInheritHandle, int dwProcessId);
+    [DllImport("advapi32.dll", SetLastError = true)]
+    private static extern bool OpenProcessToken(nint ProcessHandle, uint DesiredAccess, out nint TokenHandle);
+    [DllImport("kernel32.dll", SetLastError = true)]
+    private static extern bool CloseHandle(nint hObject);
     [DllImport("user32.dll")]
     internal static extern nint SetWinEventHook(uint eventMin, uint eventMax, nint hmodWinEventProc, WinEventDelegate lpfnWinEventProc, uint idProcess, uint idThread, uint dwFlags);
     [DllImport("user32.dll")]
@@ -39,8 +71,6 @@ public static class Interop
     internal static extern short GetKeyState(int nVirtKey);
     [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
     internal static extern short GetAsyncKeyState(ushort key);
-    [DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
-    internal static extern bool CloseHandle(nint hObject);
     [DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
     internal static extern nint CreateWaitableTimer(nint lpTimerAttributes, bool bManualReset, string? lpTimerName);
     [DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Unicode)]

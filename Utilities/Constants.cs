@@ -4,6 +4,8 @@ internal static class Constants
     internal const uint
         WINEVENT_OUTOFCONTEXT = 0,
         MOUSEEVENTF_INJECTED = 0x00000001,
+        PROCESS_QUERY_LIMITED_INFORMATION = 0x1000,
+        TOKEN_QUERY = 0x0008,
         XBUTTON1 = 0x0001,
         XBUTTON2 = 0x0002,
         EVENT_SYSTEM_SOUND = 0x0001,
