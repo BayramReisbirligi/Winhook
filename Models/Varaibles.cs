@@ -1,6 +1,6 @@
 ﻿using ReisProduction.Windelay.Utilities.Enums;
-namespace ReisProduction.Winhook.Models;
-public partial class Winhook
+namespace ReisProduction.Winhooks.Models;
+public partial class Winhooks
 {
     /// <summary>
     /// How to handle delays for mouse hold (Down...Up) events.

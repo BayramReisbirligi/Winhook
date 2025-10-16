@@ -1,5 +1,5 @@
 ﻿using System.Runtime.InteropServices;
-namespace ReisProduction.Winhook.Utilities.Structs;
+namespace ReisProduction.Winhooks.Utilities.Structs;
 [StructLayout(LayoutKind.Sequential)]
 internal struct HARDWAREINPUT
 {

@@ -1,4 +1,4 @@
-﻿namespace ReisProduction.Winhook.Utilities.Enums;
+﻿namespace ReisProduction.Winhooks.Utilities.Enums;
 public enum ButtonType : ushort
 {
     None = 0x00,

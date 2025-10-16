@@ -2,7 +2,7 @@
 using Windows.Devices.Input;
 using Windows.Foundation;
 using Windows.UI.Input;
-namespace ReisProduction.Winhook.Models;
+namespace ReisProduction.Winhooks.Models;
 public static class PointerHelper
 {
     /// <inheritdoc cref="Windows.UI.Input.PointerPoint"/>

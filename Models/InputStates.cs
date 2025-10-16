@@ -1,6 +1,6 @@
-﻿using static ReisProduction.Winhook.Services.Interop;
+﻿using static ReisProduction.Winhooks.Services.NativeMethods;
 using Windows.System;
-namespace ReisProduction.Winhook.Models;
+namespace ReisProduction.Winhooks.Models;
 public static class InputStates
 {
     /// <summary>

@@ -1,7 +1,7 @@
-﻿namespace ReisProduction.Winhook.Utilities;
-internal static class Constants
+﻿namespace ReisProduction.Winhooks.Utilities;
+public static class Constants
 {
-    internal const uint
+    public const uint
         WINEVENT_OUTOFCONTEXT = 0,
         MOUSEEVENTF_INJECTED = 0x00000001,
         PROCESS_QUERY_LIMITED_INFORMATION = 0x1000,
@@ -80,7 +80,7 @@ internal static class Constants
         EVENT_OBJECT_IME_HIDE = 0x8028,
         EVENT_OBJECT_IME_CHANGE = 0x8029,
         EVENT_OBJECT_TEXTEDIT_CONVERSIONTARGETCHANGED = 0x8030;
-    internal const int
+    public const int
         WH_KEYBOARD_LL = 13,
         WH_MOUSE_LL = 14,
         WM_KEYDOWN = 0x0100,
@@ -100,7 +100,7 @@ internal static class Constants
         WM_XBUTTONUP = 0x020C,
         LLKHF_INJECTED = 0x10,
         MAX_TITLE_LENGTH = 512;
-    internal const NotifyFilters AllNotifyFilters =
+    public const NotifyFilters AllNotifyFilters =
         NotifyFilters.Attributes |
         NotifyFilters.CreationTime |
         NotifyFilters.DirectoryName |

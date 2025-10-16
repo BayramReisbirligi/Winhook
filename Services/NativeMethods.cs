@@ -1,47 +1,12 @@
-﻿using static ReisProduction.Winhook.Utilities.Constants;
-using ReisProduction.Winhook.Utilities.Structs;
+﻿using ReisProduction.Winhooks.Utilities.Structs;
 using System.Runtime.InteropServices;
-using System.Security.Principal;
-using System.ComponentModel;
-using System.Diagnostics;
-using System.Security;
 using System.Text;
-namespace ReisProduction.Winhook.Services;
-public static class Interop
+namespace ReisProduction.Winhooks.Services;
+internal static class NativeMethods
 {
     internal delegate void WinEventDelegate(nint hWinEventHook, uint eventType, nint hwnd, int idObject, int idChild, uint dwEventThread, uint dwmsEventTime);
     internal delegate nint LowLevelKeyboardProc(int nCode, nint wParam, nint lParam);
     internal delegate nint LowLevelMouseProc(int nCode, nint wParam, nint lParam);
-    public static POINT GetCursorPos() => GetCursorPos(out POINT point) ? point :
-        throw new Win32Exception(Marshal.GetLastWin32Error(), "Failed to get cursor position");
-    public static string GetWindowTitle(nint hwnd)
-    {
-        StringBuilder sb = new(MAX_TITLE_LENGTH);
-        return GetWindowText(hwnd, sb, sb.Capacity) > 0 ? sb.ToString() : string.Empty;
-    }
-    public static bool IsProcessRunningAsAdmin(int pid)
-    {
-        try
-        {
-            var process = Process.GetProcessById(pid);
-            nint processHandle = OpenProcess(
-                PROCESS_QUERY_LIMITED_INFORMATION,
-                false,
-                process.Id);
-            try
-            {
-                if (processHandle == nint.Zero || !OpenProcessToken(processHandle,
-                    TOKEN_QUERY, out nint tokenHandle))
-                    return false;
-                using WindowsIdentity identity = new(tokenHandle);
-                WindowsPrincipal principal = new(identity);
-                return principal.IsInRole(WindowsBuiltInRole.Administrator);
-            }
-            finally { CloseHandle(processHandle); }
-        }
-        catch (SecurityException) { return true; }
-        catch { return false; }
-    }
     [DllImport("kernel32.dll", SetLastError = true)]
     private static extern nint OpenProcess(uint dwDesiredAccess, bool bInheritHandle, int dwProcessId);
     [DllImport("advapi32.dll", SetLastError = true)]
@@ -70,7 +35,7 @@ public static class Interop
     [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
     internal static extern short GetKeyState(int nVirtKey);
     [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
-    internal static extern short GetAsyncKeyState(ushort key);
+    internal static extern short GetAsyncKeyState(ushort  key);
     [DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
     internal static extern nint CreateWaitableTimer(nint lpTimerAttributes, bool bManualReset, string? lpTimerName);
     [DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Unicode)]

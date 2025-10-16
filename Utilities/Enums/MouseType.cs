@@ -1,4 +1,4 @@
-﻿namespace ReisProduction.Winhook.Utilities.Enums;
+﻿namespace ReisProduction.Winhooks.Utilities.Enums;
 public enum MouseType : ushort
 {
     None = 0x00,

@@ -1,8 +1,8 @@
-﻿using ReisProduction.Winhook.Utilities.Enums;
+﻿using ReisProduction.Winhooks.Utilities.Enums;
 using System.Management;
 using Windows.System;
-namespace ReisProduction.Winhook.Models;
-public partial class Winhook
+namespace ReisProduction.Winhooks.Models;
+public partial class Winhooks
 {
     /// <summary>
     /// System.Management event watcher events

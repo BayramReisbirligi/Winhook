@@ -1,5 +1,5 @@
-﻿using static ReisProduction.Winhook.Utilities.Constants;
-namespace ReisProduction.Winhook.Utilities;
+﻿using static ReisProduction.Winhooks.Utilities.Constants;
+namespace ReisProduction.Winhooks.Utilities;
 public abstract record HookBase(bool ShouldStart = true);
 public record ProcessStartHook(bool ShouldStart = true, params string[] ProcessNames) : HookBase(ShouldStart);
 public record ProcessStopHook(bool ShouldStart = true, params string[] ProcessNames) : HookBase(ShouldStart);

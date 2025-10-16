@@ -1,10 +1,10 @@
-﻿using static ReisProduction.Winhook.Utilities.Constants;
-using static ReisProduction.Winhook.Services.Interop;
-using ReisProduction.Winhook.Utilities.Enums;
-using ReisProduction.Winhook.Utilities;
+﻿using static ReisProduction.Winhooks.Services.NativeMethods;
+using static ReisProduction.Winhooks.Utilities.Constants;
+using ReisProduction.Winhooks.Utilities.Enums;
+using ReisProduction.Winhooks.Utilities;
 using Windows.System;
-namespace ReisProduction.Winhook.Models;
-public partial class Winhook : IDisposable
+namespace ReisProduction.Winhooks.Models;
+public partial class Winhooks : IDisposable
 {
     private readonly Dictionary<Type, (uint min, uint max)> _hookRanges = new()
     {
@@ -53,7 +53,7 @@ public partial class Winhook : IDisposable
     /// Includes window changes, UI Automation notifications, and accessibility events.
     /// </summary>
     /// <param name="name">Windows hook</param>
-    public Winhook()
+    public Winhooks()
     {
         _keyboardProc = KeyboardHookCallback;
         _mouseProc = MouseHookCallback;

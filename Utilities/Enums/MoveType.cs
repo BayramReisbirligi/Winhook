@@ -1,4 +1,4 @@
-﻿namespace ReisProduction.Winhook.Utilities.Enums;
+﻿namespace ReisProduction.Winhooks.Utilities.Enums;
 public enum MoveType : ushort
 {
     None = 0x0000,

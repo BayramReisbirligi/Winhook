@@ -1,18 +1,18 @@
 ﻿using static ReisProduction.Windelay.Models.DelayExecutor;
-using static ReisProduction.Winhook.Utilities.Constants;
-using static ReisProduction.Winhook.Services.Interop;
-using ReisProduction.Winhook.Utilities.Structs;
-using ReisProduction.Winhook.Utilities.Enums;
+using static ReisProduction.Winhooks.Utilities.Constants;
+using static ReisProduction.Winhooks.Services.NativeMethods;
+using ReisProduction.Winhooks.Utilities.Structs;
+using ReisProduction.Winhooks.Utilities.Enums;
 using ReisProduction.Windelay.Utilities;
-using ReisProduction.Winhook.Utilities;
+using ReisProduction.Winhooks.Utilities;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Collections.Concurrent;
 using System.ComponentModel;
 using System.Management;
 using Windows.System;
-namespace ReisProduction.Winhook.Models;
-public partial class Winhook
+namespace ReisProduction.Winhooks.Models;
+public partial class Winhooks
 {
     private nint SetEventHook(uint eventMin, uint eventMax) => SetWinEventHook(eventMin, eventMax, nint.Zero, _winEvents, 0, 0, WINEVENT_OUTOFCONTEXT);
     private readonly ConcurrentDictionary<VirtualKey, CancellationTokenSource> _keyHoldTokens = [];

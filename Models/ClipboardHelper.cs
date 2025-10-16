@@ -1,5 +1,5 @@
 ﻿using Windows.ApplicationModel.DataTransfer;
-namespace ReisProduction.Winhook.Models;
+namespace ReisProduction.Winhooks.Models;
 public static class ClipboardHelper
 {
     /// <summary>

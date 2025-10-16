@@ -17,16 +17,26 @@
     <PackageIcon>ReisProduction.png</PackageIcon>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageTags>$(AssemblyName)</PackageTags>
-    <PackageReleaseNotes>Winhook
+    <PackageReleaseNotes>Happy release Winhook!
 </PackageReleaseNotes>
     <NeutralLanguage>en-US</NeutralLanguage>
     <AssemblyVersion>25.5.1.4</AssemblyVersion>
     <FileVersion>25.5.1.4</FileVersion>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <SupportedOSPlatformVersion>10.0.19041.0</SupportedOSPlatformVersion>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <PackageProjectUrl>https://reisproduction.com</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/ReisProduction/Winhook</RepositoryUrl>
+    <PackAsTool>False</PackAsTool>
   </PropertyGroup>
   <ItemGroup>
+    <None Remove=".editorconfig" />
+  </ItemGroup>
+  <ItemGroup>
     <Content Include="ReisProduction.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <EditorConfigFiles Include=".editorconfig" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="System.Drawing.Common" Version="9.0.8" />
@@ -36,11 +46,16 @@
     <Reference Include="System.Windows.Forms">
       <HintPath>..\..\..\..\..\..\Windows\Microsoft.NET\Framework\v4.0.30319\System.Windows.Forms.dll</HintPath>
     </Reference>
-    <Reference Include="Windelay">
-      <HintPath>..\Windelay\bin\x64\Release\net9.0-windows10.0.26100.0\Windelay.dll</HintPath>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
+    <None Update="LICENSE">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+    <None Update="README.md">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
     <None Update="ReisProduction.png">
       <Pack>True</Pack>
       <PackagePath>\</PackagePath>
